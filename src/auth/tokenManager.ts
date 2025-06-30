@@ -171,29 +171,12 @@ export class TokenManager {
 
   async loadSavedTokens(): Promise<boolean> {
     try {
-      await this.ensureTokenDirectoryExists();
-      
-      // Check if current token file exists
-      const tokenExists = await fs.access(this.tokenPath).then(() => true).catch(() => false);
-      
-      // If no current tokens, try to migrate from legacy location
-      if (!tokenExists) {
-        const migrated = await this.migrateLegacyTokens();
-        if (!migrated) {
-          process.stderr.write(`No token file found at: ${this.tokenPath}\n`);
-          return false;
-        }
-      }
 
-      const multiAccountTokens = await this.loadMultiAccountTokens();
-      const tokens = multiAccountTokens[this.accountMode];
-
-      if (!tokens || typeof tokens !== "object") {
-        process.stderr.write(`No tokens found for ${this.accountMode} account in file: ${this.tokenPath}\n`);
-        return false;
-      }
-
-      this.oauth2Client.setCredentials(tokens);
+      this.oauth2Client.setCredentials({
+        access_token: process.env.GOOGLE_ACCESS_TOKEN || "",
+        refresh_token: process.env.GOOGLE_REFRESH_TOKEN || "",
+        id_token: process.env.GOOGLE_ID_TOKEN || "",
+      });
       process.stderr.write(`Loaded tokens for ${this.accountMode} account\n`);
       return true;
     } catch (error: unknown) {

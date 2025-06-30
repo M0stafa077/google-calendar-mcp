@@ -3,6 +3,9 @@ import { GoogleCalendarMcpServer } from './server.js';
 import { parseArgs } from './config/TransportConfig.js';
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Import modular components
 import { initializeOAuth2Client } from './auth/client.js';
